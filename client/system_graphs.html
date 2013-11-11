@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>A basic example of combined Bar and Line charts</title>
+
+    <meta name="keywords" content="lierot system graph" />
+    <meta name="description" content="Lierot system graphs." />
+    <meta name="googlebot" content="NOODP">
+
+    <!-- Include the RGraph libraries -->
+    <script src="../client/RGraph/libraries/RGraph.common.core.js" ></script>
+    <script src="../client/RGraph/libraries/RGraph.common.dynamic.js" ></script>
+    <script src="../client/RGraph/libraries/RGraph.common.tooltips.js" ></script>
+    <script src="../client/RGraph/libraries/RGraph.bar.js" ></script>
+    <script src="../client/RGraph/libraries/RGraph.line.js" ></script>
+    <script src="../client/RGraph/libraries/RGraph.drawing.yaxis.js" ></script>
+    <script src="../client/RGraph/libraries/RGraph.drawing.xaxis.js" ></script>
+    <!--[if lt IE 9]><script src="../client/RGraph/libraries/combined.html/excanvas.js"></script><![endif]-->
+</head>
+
+<body>
+
+    <h1>Lierot system graphs.</h1>
+
+    <!-- The canvas on to which the chart is drawn -->
+    <canvas id="cvs" width="1000" height="250" !style="border: 1px solid gray">[No canvas support]</canvas>
+
+    <!-- The Javascript code that creates the chart -->
+<script>
+    window.onload = function (e)
+    {
+        var line = new RGraph.Line('cvs', [4,8,6,5,3,2,2,5])
+            .Set('hmargin', 5)
+            .Set('noaxes', true)
+            .Set('ylabels', false)
+            .Set('gutter.left', 150)
+            .Set('colors', ['black'])
+            .Set('tooltips', ['James','Jenna','Karl','Olga','Mark','Pete','Louise','Jack'])
+            .Set('linewidth', 3)
+            .Draw();
+
+        var line2 = new RGraph.Line('cvs', [50,60,57,85,45,23,56,56])
+            .Set('hmargin', 5)
+            .Set('noaxes', true)
+            .Set('ylabels', false)
+            .Set('gutter.left', 150)
+            .Set('colors', ['red'])
+            .Set('tooltips', ['James','Jenna','Karl','Olga','Mark','Pete','Louise','Jack'])
+            .Set('linewidth', 3)
+            .Set('background.grid', false)
+            .Draw();
+
+        var line3 = new RGraph.Line('cvs', [12,13,15,16,18,13,15,12])
+            .Set('hmargin', 5)
+            .Set('noaxes', true)
+            .Set('ylabels', false)
+            .Set('gutter.left', 150)
+            .Set('colors', ['green'])
+            .Set('tooltips', ['James','Jenna','Karl','Olga','Mark','Pete','Louise','Jack'])
+            .Set('linewidth', 3)
+            .Set('background.grid', false)
+            .Draw();
+
+        var yaxis = new RGraph.Drawing.YAxis('cvs',line.gutterLeft)
+            .Set('max', line.max)
+            .Set('title', 'Widgets sold')
+            .Set('colors', ['black'])
+            .Draw();
+
+        var yaxis2 = new RGraph.Drawing.YAxis('cvs',line.gutterLeft * (2/3))
+            .Set('max', line2.max)
+            .Set('colors', ['red'])
+            .Set('title', 'Outside mean temperature')
+            .Draw();
+
+        var yaxis3 = new RGraph.Drawing.YAxis('cvs',line.gutterLeft / 3)
+            .Set('max', line3.max)
+            .Set('colors', ['green'])
+            .Set('title', 'Rainfall')
+            .Set('tooltips', ['Rainfall measured by the MET office'])
+            .Draw();
+    }
+</script>
+
+    <p>
+        This is an example of a Bar chart combined with a Line chart. The source code is documented to make it easier
+        for you to copy and paste it if you wish.
+    </p>
+
+</body>
+</html>
