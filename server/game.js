@@ -136,8 +136,8 @@ var food = function(location) {
 var gameArea = function() {
     var self = this;
     self.cells = {};
-    self.height = 30;
-    self.width = 30;
+    self.height = 25;
+    self.width = 25;
     self.color = "lightblue";   // Game area color
 }
 
