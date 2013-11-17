@@ -19,8 +19,8 @@ var food = function() {
 }
 
 var gameArea = function() {
-    this.height = 25;
-    this.width = 25;
+    this.height = 20;
+    this.width = 20;
     this.color = "lightblue";   // Ruudukon väri
 }
 
