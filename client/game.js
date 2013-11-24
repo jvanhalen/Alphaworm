@@ -11,6 +11,15 @@ var worm = function() {  // T√§ll√§ m√§√§rittelyll√§ varaudutaan siihen ett√§ li
     for(var x=0; x<this.startingLength; x++) {
         this.location[x] = x;
     }
+    
+
+    // worm sprite
+    this.sprite = new Image();
+    this.sprite.onload = function() {
+        console.log('Loaded worm sprite');
+    }
+    this.sprite.src = './media/worm.png';
+    console.log(this.sprite.src);
 }
 
 var food = function() {
@@ -35,6 +44,66 @@ var Peli = function () {
     self.preferredVolume = 0.1;
     self.maxVolume = 1.0;
 
+    // palauttaa tiedon mik‰ osa worm-spritest‰ 
+    // piirret‰‰n mihinkin ruutuun.
+    self.getWormTileByPosition = function ( positions, i ) {
+        if ( self.gameArea === undefined) return '-1px -1px';
+        
+        // Oletus: sijainnit ovat j‰rjestyksess h‰nn‰st‰ p‰‰h‰n.
+
+        var current = { x:0,y:0 }
+        var next = { x:0,y:0 }
+        var prev = { x:0, y:0 }
+
+        current.y = Math.floor(positions[i] / self.gameArea.width); 
+        current.x = positions[i] % self.gameArea.width;
+        
+        if ( i == 0 ){
+            // tsekkaa seuraava
+            next.y = Math.floor(positions[i+1] / self.gameArea.width); 
+            next.x = positions[i+1] % self.gameArea.width;
+            if ( next.x == current.x ) return '-1px -1px';
+            if ( next.y == current.y ) return '-21px -1px';
+        } 
+        else if ( i == positions.length-1)
+        {
+            // tsekkaa edelt‰v‰
+            prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
+            prev.x = positions[i-1] % self.gameArea.width;
+            if ( prev.x == current.x ) return '-1px -1px';
+            if ( prev.y == current.y ) return '-21px -1px';
+        }
+        else {
+            // tsekkaa edelt‰v‰ ja seuraava
+            prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
+            prev.x = positions[i-1] % self.gameArea.width;
+            next.y = Math.floor(positions[i+1] / self.gameArea.width); 
+            next.x = positions[i+1] % self.gameArea.width;
+            // menn‰‰n suoraan
+            if ( prev.y == next.y ) return '-21px -1px';
+            if ( prev.x == next.x ) return '-1px -1px';
+            
+            // vasen -> oikea
+            if ( prev.x < current.x  ) {
+                // k‰‰nnyt‰‰n alas
+                if ( current.y < next.y) return '-21px -21px';
+                // k‰‰nnyt‰‰n ylˆs
+                if ( current.y > next.y) return '-43px -21px';
+            }
+            // oikea -> vasen
+            else if ( prev.x > current.x  ) {
+                // k‰‰nnyt‰‰n alas
+                if ( current.y < next.y) return '-1px -21px';
+                // k‰‰nnyt‰‰n ylˆs
+                if ( current.y > next.y) return '-65px -21px';
+            }
+            
+        }
+        // default, should not be here.
+        console.log("ERROR: should not reach here! getWormTileByPosition");
+        return "-1px -1px";
+    }
+
     self.init = function() {
 
         self.messageBroker = new MessageBroker();
@@ -42,6 +111,7 @@ var Peli = function () {
 
         self.messageBroker.attachHandler(self.messageHandler);
         self.messageHandler.attachBroker(self.messageBroker);
+        
 
     },
 
@@ -51,8 +121,10 @@ var Peli = function () {
         if (null == uusipeli) {
             console.log("luo tyhj√§ pelilauta");
             self.gameArea = new gameArea();
+            self.worm = new worm();
         }
         else {
+            console.log("Creating worm");
             self.worm = new worm();
             self.gameArea = new gameArea();
             self.amountOfFood = 12;
@@ -125,7 +197,8 @@ var Peli = function () {
         for(var i=0; i<self.gameArea.height; i++) {
             for(var j=0; j<self.gameArea.width; j++) {
                 var id = (j+(i*self.gameArea.height));
-                document.getElementById(id).bgColor = self.gameArea.color;
+
+                document.getElementById(id).style.background = self.gameArea.color;
                 document.getElementById(id).innerHTML = "&nbsp;";
 
             }
@@ -167,9 +240,15 @@ var Peli = function () {
 
         // Render worms
         for (var id=0; id<msg.worms.length; id++) {
+
             for (var x=0; x<msg.worms[id].location.length; x++) {
-                document.getElementById(msg.worms[id].location[x]).bgColor = msg.worms[id].color;
+
+                var cell = document.getElementById(msg.worms[id].location[x]); 
+                //background: color position size repeat origin clip attachment image;
+                cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat " + 
+                                           self.getWormTileByPosition(msg.worms[id].location, x);
             }
+
         }
 
         // Render foods
