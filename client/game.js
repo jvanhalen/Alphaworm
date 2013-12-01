@@ -58,22 +58,49 @@ var Peli = function () {
         current.y = Math.floor(positions[i] / self.gameArea.width); 
         current.x = positions[i] % self.gameArea.width;
         
-        if ( i == 0 ){
+        if ( i == 0 ){ // häntä
             // tsekkaa seuraava
             next.y = Math.floor(positions[i+1] / self.gameArea.width); 
             next.x = positions[i+1] % self.gameArea.width;
-            if ( next.x == current.x ) return '-1px -1px';
-            if ( next.y == current.y ) return '-21px -1px';
+
+            if ( next.x == current.x ) 
+            {
+                if ( current.y < next.y )
+                    return '-41px -41px';
+                else
+                    return '-61px -41px';
+            }
+            else if ( next.y == current.y ) 
+            { 
+                if ( current.x < next.x )
+                    return '-41px -61px';
+                else
+                    return '-61px -61px';
+
+            }
         } 
-        else if ( i == positions.length-1)
+        else if ( i == positions.length-1) // pää
         {
             // tsekkaa edeltävä
             prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
             prev.x = positions[i-1] % self.gameArea.width;
-            if ( prev.x == current.x ) return '-1px -1px';
-            if ( prev.y == current.y ) return '-21px -1px';
+            if ( prev.x == current.x ) 
+            {
+                if ( prev.y < current.y ) 
+                    return '-21px -61px';
+                else
+                    return '-1px -61px';
+            }
+            else if ( prev.y == current.y ) 
+            {
+                if ( prev.x < current.x ) 
+                    return '-1px -41px';
+                else
+                    return '-21px -41px';
+            }
         }
-        else {
+        else  // keskiruumista
+        {
             // tsekkaa edeltävä ja seuraava
             prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
             prev.x = positions[i-1] % self.gameArea.width;
