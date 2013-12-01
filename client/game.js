@@ -79,23 +79,68 @@ var Peli = function () {
             prev.x = positions[i-1] % self.gameArea.width;
             next.y = Math.floor(positions[i+1] / self.gameArea.width); 
             next.x = positions[i+1] % self.gameArea.width;
-            // menn‰‰n suoraan
+            // menn‰‰n suoraan    A
+            //                    |
+            //                    v
             if ( prev.y == next.y ) return '-21px -1px';
+            // menn‰‰n suoraan    
+            //
+            // <--->
             if ( prev.x == next.x ) return '-1px -1px';
             
-            // vasen -> oikea
+            // ---> 
             if ( prev.x < current.x  ) {
                 // k‰‰nnyt‰‰n alas
+                // ---+
+                //    |
+                //    V
                 if ( current.y < next.y) return '-21px -21px';
                 // k‰‰nnyt‰‰n ylˆs
-                if ( current.y > next.y) return '-43px -21px';
+                //    A
+                //    |
+                // ---+
+                if ( current.y > next.y) return '-41px -21px';
             }
-            // oikea -> vasen
+            // <---
             else if ( prev.x > current.x  ) {
+                
                 // k‰‰nnyt‰‰n alas
+                //    +---
+                //    |
+                //    V
                 if ( current.y < next.y) return '-1px -21px';
+                
                 // k‰‰nnyt‰‰n ylˆs
-                if ( current.y > next.y) return '-65px -21px';
+                //    A
+                //    |
+                //    +---
+                if ( current.y > next.y) return '-61px -21px';
+            } 
+            //   |
+            //   V
+            else if ( prev.y < current.y ) {
+
+                // k‰‰nnyt‰‰n oikealle
+                //   | 
+                //   +-->                
+                if ( current.x < next.x) return '-61px -21px';
+                // k‰‰nnyt‰‰n vasemmalle
+                //   |
+                // <-+
+                if ( current.x > next.x) return '-41px -21px';
+            } 
+            //   A
+            //   |
+            else if ( prev.y > current.y ) {
+
+                // k‰‰nnyt‰‰n oikealle
+                //   +-->
+                //   | 
+                if ( current.x < next.x) return '-1px -21px';
+                // k‰‰nnyt‰‰n vasemmalle
+                // <-+
+                //   |
+                if ( current.x > next.x) return '-21px -21px';
             }
             
         }
