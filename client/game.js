@@ -6,7 +6,7 @@ var worm = function() {  // T√§ll√§ m√§√§rittelyll√§ varaudutaan siihen ett√§ li
     this.direction = "right"; // Menosuunta: right, left, up, down
     this.velocity = 1;
     this.score = 0;
-
+    
     // Alusta worm
     for(var x=0; x<this.startingLength; x++) {
         this.location[x] = x;
@@ -43,7 +43,26 @@ var Peli = function () {
     self.music = null;
     self.preferredVolume = 0.1;
     self.maxVolume = 1.0;
+    
+    self.word = undefined;
+    
+    self.hooray = function(message){
+        var tmp = document.getElementById("completed");
+        tmp.style.visibility = "visible";
+        tmp.style.left = ((document.body.clientWidth / 2) - (tmp.clientWidth / 2)) + 'px';
+        tmp.style.top = (document.body.clientHeight / 2) + 'px';
+        tmp.innerHTML = message;
+        tmp.className = "wordcomplete animate";
+        window.setTimeout(function(){
+            var tmp = document.getElementById("completed");
+            tmp.style.transition = "";
+            tmp.className = "wordcomplete";
+            tmp.style.visibility = "hidden";
 
+        }, 1000);
+        
+
+    }
     // palauttaa tiedon mik‰ osa worm-spritest‰ 
     // piirret‰‰n mihinkin ruutuun.
     self.getWormTileByPosition = function ( positions, i ) {
@@ -295,7 +314,6 @@ var Peli = function () {
         //console.log("Poista food", ruutu);
         for (var x=0; x<self.foods.length; x++) {
             if (self.foods[x] == ruutu) {
-
                 self.foods.splice(x, 1);
             }
         }
@@ -317,16 +335,30 @@ var Peli = function () {
 
                 var cell = document.getElementById(msg.worms[id].location[x]); 
                 //background: color position size repeat origin clip attachment image;
-                cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat " + 
-                                           self.getWormTileByPosition(msg.worms[id].location, x);
+                 cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat " + 
+                        self.getWormTileByPosition(msg.worms[id].location, x);
             }
 
         }
 
+        // duplicate food. TODO: add detection for food collect.
+        
+        //if ( self.food.length == 0 ) { self.food = msg.food;}
         // Render foods
         for (var x=0; x<msg.food.length; x++) {
             document.getElementById(msg.food[x].location).bgColor = msg.food[x].color;
-            document.getElementById(msg.food[x].location).innerHTML = "<strong>" + msg.food[x].letter.toUpperCase() + "</strong>";
+            document.getElementById(msg.food[x].location).innerHTML = "<div class=\"letter\">" + msg.food[x].letter.toUpperCase() + "</div>";
+        }
+
+        // Logic for detecting word completion
+        if ( self.word == undefined ){ self.word = msg.word; }
+        else if ( msg.word.finnish != self.word.finnish ) {
+
+            //console.log('Word change', self.word.finnish, "->", msg.word.finnish);
+            self.hooray(self.word.english.toUpperCase());
+            self.word = msg.word;
+
+            
         }
 
         // Update score
