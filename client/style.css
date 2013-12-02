@@ -97,38 +97,12 @@ td {
 .wordcomplete {
     position: absolute;
     z-index: 2;
-    font-size: 12pt;
+    top: -100px;
+    font-size: 22pt;
     font-weight: bold;
-    visibility: hidden;
     margin: auto auto auto auto;
     display: block;
-    opacity: 0.0;
-    -webkit-transform: scale(1); 
-    -moz-transform: scale(1); 
-    -o-transform: scale(1); 
-    -ms-transform: scale(1); 
-    transform: scale(1); 
-    -webkit-transition: all 1s ease-out; 
-    -moz-transition: all 1s ease-out; 
-    -o-transition: all 1s ease-out; 
-    transition: all 1s ease-out; 
-    text-shadow: 0px 0px 5px black ;
-}
-
-.letter { 
-    /*background-color: #eee; */
-    -webkit-transition: all 1s ease-in-out; 
-    -moz-transition: all 1s ease-in-out; 
-    -o-transition: all 1s ease-in-out; 
-    transition: all 1s ease-in-out; 
-} 
-
-.animate { 
-
-    -webkit-transform: scale(14); 
-    -moz-transform: scale(14); 
-    -o-transform: scale(14); 
-    -ms-transform: scale(14); 
-    transform: scale(14); 
     opacity: 1.0;
+    text-shadow: 0px 0px 5px white;
+    transform: scaleX(1);
 }

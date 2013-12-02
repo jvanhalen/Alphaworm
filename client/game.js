@@ -48,19 +48,34 @@ var Peli = function () {
     
     self.hooray = function(message){
         var tmp = document.getElementById("completed");
-        tmp.style.visibility = "visible";
-        tmp.style.left = ((document.body.clientWidth / 2) - (tmp.clientWidth / 2)) + 'px';
-        tmp.style.top = (document.body.clientHeight / 2) + 'px';
-        tmp.innerHTML = message;
-        tmp.className = "wordcomplete animate";
-        window.setTimeout(function(){
-            var tmp = document.getElementById("completed");
-            tmp.style.transition = "";
-            tmp.className = "wordcomplete";
-            tmp.style.visibility = "hidden";
+        tmp.style.opacity = 1.0;
+        tmp.style.visibility = 'visible';
+        tmp.style.transform = 'scaleX(1)';
 
-        }, 1000);
+        var tween = new TWEEN.Tween( { y: 0 } )
+            .to( { y: 400 }, 1000 )
+            .easing( TWEEN.Easing.Bounce.Out )
+            .onUpdate( function () {
+                var tmp = document.getElementById("completed");
+                tmp.style.top = this.y + 'px';
+                tmp.style.left = (document.body.clientWidth / 2) + 'px';
+            } ).start();
+        var tweenTmp = new TWEEN.Tween( {} ).to( {}, 1000);
         
+        var tween2 = new TWEEN.Tween( { o: 1.0, s: 1.0 } )
+            .to( { o: 0.0, s:12 }, 1000 )
+            .easing( TWEEN.Easing.Bounce.InOut  )
+            .onUpdate( function () {
+                var tmp = document.getElementById("completed");
+                tmp.style.opacity = this.o;
+                tmp.style.transform = 'scaleX('+this.s+')';
+                tmp.style.left = (document.body.clientWidth / 2) + 'px';
+                if ( this.s >= 12 ) {
+                    tmp.style.visibility = 'hidden';
+                }
+            } );
+        tween.chain(tweenTmp);
+        tweenTmp.chain(tween2);
 
     }
     // palauttaa tiedon mikä osa worm-spritestä 
@@ -474,4 +489,12 @@ var Peli = function () {
     }
 
     self.init();
+}
+
+animate();
+function animate() {
+
+    requestAnimationFrame( animate ); // js/RequestAnimationFrame.js needs to be included too.
+    TWEEN.update();
+    
 }
