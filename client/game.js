@@ -45,9 +45,55 @@ var Peli = function () {
     self.maxVolume = 1.0;
     
     self.word = undefined;
+
+    // event handler for food collect
+    self.onFoodCollect = function( food ) {
+        console.log("Collected letter", food.letter, "at", food.location);
+        var cell = document.getElementById(food.location);
+        var rect = cell.getBoundingClientRect();
+        //console.log(rect.top, rect.right, rect.bottom, rect.left);
+        
+        var effectDiv = document.createElement("div");
+        effectDiv.appendChild(document.createTextNode(food.letter.toUpperCase()));
+        effectDiv.style["position"]= "absolute";
+        effectDiv.style["z-index"]= "3";
+        effectDiv.style["top"] = rect.top + "px";
+        effectDiv.style["left"] = rect.left + "px";
+        effectDiv.id = 'foodEffect';
+        
+        document.body.appendChild(effectDiv);
+        
+        
+        var tween = new TWEEN.Tween( { s: 1 } )
+            .to( { s: 12 }, 1000 )
+            .easing( TWEEN.Easing.Back.Out )
+            .onUpdate( function () {
+                var tmp = document.getElementById("foodEffect");
+                tmp.style.transform = "scale("+this.s+")";
+                
+            });
+
+        var tweenFade = new TWEEN.Tween( { o: 1.0 } )
+            .to( { o: 0.0 }, 500 )
+            .easing( TWEEN.Easing.Exponential.Out )
+            .onUpdate( function () {
+                var tmp = document.getElementById("foodEffect");
+                tmp.style.opacity = this.o;
+                
+            })            
+            .onComplete( function(){
+                var tmp = document.getElementById("foodEffect");
+                document.body.removeChild(tmp);
+            });
+
+        tween.chain(tweenFade);
+        tween.start();
+    }
     
-    self.hooray = function(message){
+    // event handler for word completion
+    self.onWordComplete = function(message){
         var tmp = document.getElementById("completed");
+        tmp.innerHTML = message + " completed!";
         tmp.style.opacity = 1.0;
         tmp.style.visibility = 'visible';
         tmp.style.transform = 'scaleX(1)';
@@ -223,7 +269,7 @@ var Peli = function () {
 
     self.initGame = function(uusipeli) {
         console.log("initGame");
-
+        
         if (null == uusipeli) {
             console.log("luo tyhjä pelilauta");
             self.gameArea = new gameArea();
@@ -241,6 +287,8 @@ var Peli = function () {
         self.initGameboard();
         self.kaynnissa = true;
         self.score = 0;
+        // for detecting letter collisions properly.
+        self.foods = [];
     },
 
     self.playMusic = function(volume) {
@@ -356,8 +404,22 @@ var Peli = function () {
 
         }
 
-        // duplicate food. TODO: add detection for food collect.
-        
+
+        // once there will be our copy of food, we can compare.
+        if ( self.foods.length > 0 ){
+
+            for (var x=0; x<msg.food.length; x++) {
+                if ( self.foods[x].location != msg.food[x].location )
+                {
+                    
+                    self.onFoodCollect( self.foods[x] );
+                    break;
+                }
+            }
+        }
+        // duplicate food. 
+        self.foods = JSON.parse(JSON.stringify(msg.food));
+
         //if ( self.food.length == 0 ) { self.food = msg.food;}
         // Render foods
         for (var x=0; x<msg.food.length; x++) {
@@ -370,7 +432,7 @@ var Peli = function () {
         else if ( msg.word.finnish != self.word.finnish ) {
 
             //console.log('Word change', self.word.finnish, "->", msg.word.finnish);
-            self.hooray(self.word.english.toUpperCase());
+            self.onWordComplete(self.word.english.toUpperCase());
             self.word = msg.word;
 
             
@@ -491,6 +553,7 @@ var Peli = function () {
     self.init();
 }
 
+// for tweening library to work.
 animate();
 function animate() {
 
