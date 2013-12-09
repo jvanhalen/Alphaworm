@@ -6,11 +6,20 @@ var worm = function() {  // T√§ll√§ m√§√§rittelyll√§ varaudutaan siihen ett√§ li
     this.direction = "right"; // Menosuunta: right, left, up, down
     this.velocity = 1;
     this.score = 0;
-
+    
     // Alusta worm
     for(var x=0; x<this.startingLength; x++) {
         this.location[x] = x;
     }
+    
+
+    // worm sprite
+    this.sprite = new Image();
+    this.sprite.onload = function() {
+        console.log('Loaded worm sprite');
+    }
+    this.sprite.src = './media/worm.png';
+    console.log(this.sprite.src);
 }
 
 var food = function() {
@@ -19,8 +28,8 @@ var food = function() {
 }
 
 var gameArea = function() {
-    this.height = 20;
-    this.width = 20;
+    this.height = 30;
+    this.width = 30;
     this.color = "lightblue";   // Ruudukon v√§ri
 }
 
@@ -34,6 +43,218 @@ var Peli = function () {
     self.music = null;
     self.preferredVolume = 0.1;
     self.maxVolume = 1.0;
+    
+    self.word = undefined;
+
+    // event handler for food collect
+    self.onFoodCollect = function( food ) {
+        console.log("Collected letter", food.letter, "at", food.location);
+        var cell = document.getElementById(food.location);
+        var rect = cell.getBoundingClientRect();
+        //console.log(rect.top, rect.right, rect.bottom, rect.left);
+        
+        var effectDiv = document.createElement("div");
+        effectDiv.appendChild(document.createTextNode(food.letter.toUpperCase()));
+        effectDiv.style["position"]= "absolute";
+        effectDiv.style["z-index"]= "3";
+        effectDiv.style["top"] = rect.top + "px";
+        effectDiv.style["left"] = rect.left + "px";
+        effectDiv.id = 'foodEffect';
+        
+        document.body.appendChild(effectDiv);
+        
+        
+        var tween = new TWEEN.Tween( { s: 1 } )
+            .to( { s: 12 }, 1000 )
+            .easing( TWEEN.Easing.Back.Out )
+            .onUpdate( function () {
+                var tmp = document.getElementById("foodEffect");
+                tmp.style.transform = "scale("+this.s+")";
+                
+            });
+
+        var tweenFade = new TWEEN.Tween( { o: 1.0 } )
+            .to( { o: 0.0 }, 500 )
+            .easing( TWEEN.Easing.Exponential.Out )
+            .onUpdate( function () {
+                var tmp = document.getElementById("foodEffect");
+                tmp.style.opacity = this.o;
+                
+            })            
+            .onComplete( function(){
+                var tmp = document.getElementById("foodEffect");
+                document.body.removeChild(tmp);
+            });
+
+        tween.chain(tweenFade);
+        tween.start();
+    }
+    
+    // event handler for word completion
+    self.onWordComplete = function(message){
+        var tmp = document.getElementById("completed");
+        tmp.innerHTML = message + " completed!";
+        tmp.style.opacity = 1.0;
+        tmp.style.visibility = 'visible';
+        tmp.style.transform = 'scaleX(1)';
+
+        var tween = new TWEEN.Tween( { y: 0 } )
+            .to( { y: 400 }, 1000 )
+            .easing( TWEEN.Easing.Bounce.Out )
+            .onUpdate( function () {
+                var tmp = document.getElementById("completed");
+                tmp.style.top = this.y + 'px';
+                tmp.style.left = (document.body.clientWidth / 2) + 'px';
+            } ).start();
+        var tweenTmp = new TWEEN.Tween( {} ).to( {}, 1000);
+        
+        var tween2 = new TWEEN.Tween( { o: 1.0, s: 1.0 } )
+            .to( { o: 0.0, s:12 }, 1000 )
+            .easing( TWEEN.Easing.Bounce.InOut  )
+            .onUpdate( function () {
+                var tmp = document.getElementById("completed");
+                tmp.style.opacity = this.o;
+                tmp.style.transform = 'scaleX('+this.s+')';
+                tmp.style.left = (document.body.clientWidth / 2) + 'px';
+                if ( this.s >= 12 ) {
+                    tmp.style.visibility = 'hidden';
+                }
+            } );
+        tween.chain(tweenTmp);
+        tweenTmp.chain(tween2);
+
+    }
+    // palauttaa tiedon mik‰ osa worm-spritest‰ 
+    // piirret‰‰n mihinkin ruutuun.
+    self.getWormTileByPosition = function ( positions, i ) {
+        if ( self.gameArea === undefined) return '-1px -1px';
+        
+        // Oletus: sijainnit ovat j‰rjestyksess h‰nn‰st‰ p‰‰h‰n.
+
+        var current = { x:0,y:0 }
+        var next = { x:0,y:0 }
+        var prev = { x:0, y:0 }
+
+        current.y = Math.floor(positions[i] / self.gameArea.width); 
+        current.x = positions[i] % self.gameArea.width;
+        
+        if ( i == 0 ){ // h‰nt‰
+            // tsekkaa seuraava
+            next.y = Math.floor(positions[i+1] / self.gameArea.width); 
+            next.x = positions[i+1] % self.gameArea.width;
+
+            if ( next.x == current.x ) 
+            {
+                if ( current.y < next.y )
+                    return '-41px -41px';
+                else
+                    return '-61px -41px';
+            }
+            else if ( next.y == current.y ) 
+            { 
+                if ( current.x < next.x )
+                    return '-41px -61px';
+                else
+                    return '-61px -61px';
+
+            }
+        } 
+        else if ( i == positions.length-1) // p‰‰
+        {
+            // tsekkaa edelt‰v‰
+            prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
+            prev.x = positions[i-1] % self.gameArea.width;
+            if ( prev.x == current.x ) 
+            {
+                if ( prev.y < current.y ) 
+                    return '-21px -61px';
+                else
+                    return '-1px -61px';
+            }
+            else if ( prev.y == current.y ) 
+            {
+                if ( prev.x < current.x ) 
+                    return '-1px -41px';
+                else
+                    return '-21px -41px';
+            }
+        }
+        else  // keskiruumista
+        {
+            // tsekkaa edelt‰v‰ ja seuraava
+            prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
+            prev.x = positions[i-1] % self.gameArea.width;
+            next.y = Math.floor(positions[i+1] / self.gameArea.width); 
+            next.x = positions[i+1] % self.gameArea.width;
+            // menn‰‰n suoraan    A
+            //                    |
+            //                    v
+            if ( prev.y == next.y ) return '-21px -1px';
+            // menn‰‰n suoraan    
+            //
+            // <--->
+            if ( prev.x == next.x ) return '-1px -1px';
+            
+            // ---> 
+            if ( prev.x < current.x  ) {
+                // k‰‰nnyt‰‰n alas
+                // ---+
+                //    |
+                //    V
+                if ( current.y < next.y) return '-21px -21px';
+                // k‰‰nnyt‰‰n ylˆs
+                //    A
+                //    |
+                // ---+
+                if ( current.y > next.y) return '-41px -21px';
+            }
+            // <---
+            else if ( prev.x > current.x  ) {
+                
+                // k‰‰nnyt‰‰n alas
+                //    +---
+                //    |
+                //    V
+                if ( current.y < next.y) return '-1px -21px';
+                
+                // k‰‰nnyt‰‰n ylˆs
+                //    A
+                //    |
+                //    +---
+                if ( current.y > next.y) return '-61px -21px';
+            } 
+            //   |
+            //   V
+            else if ( prev.y < current.y ) {
+
+                // k‰‰nnyt‰‰n oikealle
+                //   | 
+                //   +-->                
+                if ( current.x < next.x) return '-61px -21px';
+                // k‰‰nnyt‰‰n vasemmalle
+                //   |
+                // <-+
+                if ( current.x > next.x) return '-41px -21px';
+            } 
+            //   A
+            //   |
+            else if ( prev.y > current.y ) {
+
+                // k‰‰nnyt‰‰n oikealle
+                //   +-->
+                //   | 
+                if ( current.x < next.x) return '-1px -21px';
+                // k‰‰nnyt‰‰n vasemmalle
+                // <-+
+                //   |
+                if ( current.x > next.x) return '-21px -21px';
+            }
+            
+        }
+        // default, should not be here.
+        console.log("ERROR: should not reach here! getWormTileByPosition");
+        return "-1px -1px";
+    }
 
     self.init = function() {
 
@@ -42,17 +263,20 @@ var Peli = function () {
 
         self.messageBroker.attachHandler(self.messageHandler);
         self.messageHandler.attachBroker(self.messageBroker);
+        
 
     },
 
     self.initGame = function(uusipeli) {
         console.log("initGame");
-
+        
         if (null == uusipeli) {
             console.log("luo tyhj√§ pelilauta");
             self.gameArea = new gameArea();
+            self.worm = new worm();
         }
         else {
+            console.log("Creating worm");
             self.worm = new worm();
             self.gameArea = new gameArea();
             self.amountOfFood = 12;
@@ -63,6 +287,8 @@ var Peli = function () {
         self.initGameboard();
         self.kaynnissa = true;
         self.score = 0;
+        // for detecting letter collisions properly.
+        self.foods = [];
     },
 
     self.playMusic = function(volume) {
@@ -125,7 +351,8 @@ var Peli = function () {
         for(var i=0; i<self.gameArea.height; i++) {
             for(var j=0; j<self.gameArea.width; j++) {
                 var id = (j+(i*self.gameArea.height));
-                document.getElementById(id).bgColor = self.gameArea.color;
+
+                document.getElementById(id).style.background = self.gameArea.color;
                 document.getElementById(id).innerHTML = "&nbsp;";
 
             }
@@ -150,7 +377,6 @@ var Peli = function () {
         //console.log("Poista food", ruutu);
         for (var x=0; x<self.foods.length; x++) {
             if (self.foods[x] == ruutu) {
-
                 self.foods.splice(x, 1);
             }
         }
@@ -167,15 +393,49 @@ var Peli = function () {
 
         // Render worms
         for (var id=0; id<msg.worms.length; id++) {
+
             for (var x=0; x<msg.worms[id].location.length; x++) {
-                document.getElementById(msg.worms[id].location[x]).bgColor = msg.worms[id].color;
+
+                var cell = document.getElementById(msg.worms[id].location[x]); 
+                //background: color position size repeat origin clip attachment image;
+                 cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat " + 
+                        self.getWormTileByPosition(msg.worms[id].location, x);
             }
+
         }
 
+
+        // once there will be our copy of food, we can compare.
+        if ( self.foods.length > 0 ){
+
+            for (var x=0; x<msg.food.length; x++) {
+                if ( self.foods[x].location != msg.food[x].location )
+                {
+                    
+                    self.onFoodCollect( self.foods[x] );
+                    break;
+                }
+            }
+        }
+        // duplicate food. 
+        self.foods = JSON.parse(JSON.stringify(msg.food));
+
+        //if ( self.food.length == 0 ) { self.food = msg.food;}
         // Render foods
         for (var x=0; x<msg.food.length; x++) {
             document.getElementById(msg.food[x].location).bgColor = msg.food[x].color;
-            document.getElementById(msg.food[x].location).innerHTML = "<strong>" + msg.food[x].letter.toUpperCase() + "</strong>";
+            document.getElementById(msg.food[x].location).innerHTML = "<div class=\"letter\">" + msg.food[x].letter.toUpperCase() + "</div>";
+        }
+
+        // Logic for detecting word completion
+        if ( self.word == undefined ){ self.word = msg.word; }
+        else if ( msg.word.finnish != self.word.finnish ) {
+
+            //console.log('Word change', self.word.finnish, "->", msg.word.finnish);
+            self.onWordComplete(self.word.english.toUpperCase());
+            self.word = msg.word;
+
+            
         }
 
         // Update score
@@ -291,4 +551,13 @@ var Peli = function () {
     }
 
     self.init();
+}
+
+// for tweening library to work.
+animate();
+function animate() {
+
+    requestAnimationFrame( animate ); // js/RequestAnimationFrame.js needs to be included too.
+    TWEEN.update();
+    
 }

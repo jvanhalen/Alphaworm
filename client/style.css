@@ -1,4 +1,11 @@
+BODY {
+    background-color: black;
+    color: white;
+    overflow: hidden;
+}
+
 input:focus {
+
     background: pink;
 }
 
@@ -37,6 +44,7 @@ input:focus {
     margin-right: 20%;
     border-right: 1px solid gray;
     text-align: center;
+
 }
 
 #rankinglista {
@@ -74,12 +82,31 @@ table, th, td, tr {
 	margin: auto;
 }
 td {
-	height: 20px;
-	width: 20px;
+	height: 19px;
+	width: 19px;
 }
 
 #rankings {
     width: 100%;
     margin: auto;
     text-align: left;
+}
+
+
+
+.wordcomplete {
+    position: absolute;
+    z-index: 2;
+    top: -100px;
+    font-size: 22pt;
+    font-weight: bold;
+    margin: auto auto auto auto;
+    display: block;
+    opacity: 1.0;
+    text-shadow: 0px 0px 5px white;
+    transform: scaleX(1);
+}
+#foodEffect {
+    font-weight: bold;
+    text-shadow: 0px 0px 5px white;
 }
