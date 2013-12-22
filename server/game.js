@@ -136,8 +136,8 @@ var food = function(location) {
 var gameArea = function() {
     var self = this;
     self.cells = {};
-    self.height = 20;
-    self.width = 20;
+    self.height = 30;
+    self.width = 30;
     self.color = "lightblue";   // Game area color
 }
 
@@ -208,7 +208,6 @@ var GameServer = function(messagehandler) {
             case 'DISCONNECT_REQ':
                 console.log("GameServer: DISCONNECT_REQ from", msg.username);
                 if (undefined !== self.gameSessions[msg.username]) {
-                    console.log("GameServer:", msg.username, "was in game"),
                     self.gameSessions[msg.username].game.disconnect(msg);
                 }
                 break;
