@@ -39,7 +39,16 @@ var Server = function() {
             express = require('express');
         self.app = express();
 
-        // Salli hakemistot
+        // Pass the websocket information to the client
+        app.use('/websocketURI.js', function(req, res) {
+            var port = 8000;
+            // Modify the URI only if we pass an optional connection port in.
+            var websocketURI = self.port ? ':' + self.port + '/' : '/';
+            res.set('Content-Type', 'text/javascript');
+            res.send('var websocketURI="' + websocketURI + '";');
+        });
+
+        // Enable some directories for client
         self.app.use('/client', express.static(__dirname + '/client'));
         self.app.use('/common', express.static(__dirname + '/common'));
         self.app.use('/media', express.static(__dirname + '/media'));
