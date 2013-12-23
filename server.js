@@ -40,7 +40,7 @@ var Server = function() {
         self.app = express();
 
         // Pass the websocket information to the client
-        app.use('/websocketURI.js', function(req, res) {
+        self.app.use('/websocketURI.js', function(req, res) {
             var port = 8000;
             // Modify the URI only if we pass an optional connection port in.
             var websocketURI = self.port ? ':' + self.port + '/' : '/';
