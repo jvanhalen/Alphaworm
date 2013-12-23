@@ -1,3 +1,5 @@
+#!/bin/env node
+
 var MessageBroker = require('./server/messagebroker');
 var MessageHandler = require('./server/messagehandler');
 var DatabaseProxy = require('./server/databaseproxy');
