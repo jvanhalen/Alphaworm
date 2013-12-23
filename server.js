@@ -46,7 +46,7 @@ var Server = function() {
             var port = 8000;
             console.log("OPENSHIFT_APP_DNS = ", process.env.OPENSHIFT_APP_DNS);
             // Modify the URI only if we pass an optional connection port in.
-            var websocketURI = process.env.OPENSHIFT_APP_DNS + self.clientport;
+            var websocketURI = process.env.OPENSHIFT_APP_DNS + ':' + self.clientport;
             console.log("websocketURI = ", websocketURI);
             res.set('Content-Type', 'text/javascript');
             res.send('var websocketURI="' + websocketURI + '";');
