@@ -44,7 +44,7 @@ var Server = function() {
         self.app.use('/websocketURI.js', function(req, res) {
             var port = 8000;
             // Modify the URI only if we pass an optional connection port in.
-            var websocketURI = self.port ? ':' + self.port + '/' : '/';
+            var websocketURI = self.domain + self.port ? ':' + self.port + '/' : '/';
             console.log("websocketURI = ", websocketURI);
             res.set('Content-Type', 'text/javascript');
             res.send('var websocketURI="' + websocketURI + '";');
