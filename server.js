@@ -23,6 +23,7 @@ var Server = function() {
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
         self.port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
         self.domain    = process.env.OPENSHIFT_APP_DNS;
+        self.clientport = 8000;
 
         if (typeof self.ipaddress === "undefined") {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
@@ -45,8 +46,7 @@ var Server = function() {
             var port = 8000;
             console.log("OPENSHIFT_APP_DNS = ", process.env.OPENSHIFT_APP_DNS);
             // Modify the URI only if we pass an optional connection port in.
-            var websocketURI = self.port ? ':' + self.port + '/' : '/';
-            websocketURI = process.env.OPENSHIFT_APP_DNS + websocketURI;
+            var websocketURI = process.env.OPENSHIFT_APP_DNS + self.clientport;
             console.log("websocketURI = ", websocketURI);
             res.set('Content-Type', 'text/javascript');
             res.send('var websocketURI="' + websocketURI + '";');

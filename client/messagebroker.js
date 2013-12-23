@@ -9,7 +9,7 @@ var MessageBroker = function() {
         // The websocketURI if received from the server
         //self.ws = new WebSocket('ws://lierot-jvanhalen.rhcloud.com:8000');
         console.log("websocketURI = ", websocketURI);
-        self.ws = new WebSocket('ws://' + websocketURI);
+        self.ws = new WebSocket('wss://' + websocketURI + '/');
 
         self.ws.onmessage = function (event) {
             var msg = JSON.parse(event.data);
