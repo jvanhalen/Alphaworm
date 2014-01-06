@@ -1,3 +1,5 @@
+var proton = new Proton;
+var renderer;
 var worm = function() {  // Tällä määrittelyllä varaudutaan siihen että lieroja on tulevaisuudessa useampiakin
     this.name = "liero";
     this.color = "blue";
@@ -46,12 +48,56 @@ var Peli = function () {
     
     self.word = undefined;
 
+    // setup particle emitter
+    self.proton = proton;
+    
+
+    
+
+
+    
+
+
+    
+
+    var divelem = document.getElementById("particles");
+    if ( divelem == undefined ){
+        console.log("CANT FIND IT");
+    }
+    renderer = new Proton.Renderer('dom', proton, divelem);
+    renderer.start();
+
+    self.puff = function( x, y )
+    {    
+        
+        var emitter = new Proton.Emitter();
+        emitter.rate = new Proton.Rate(new Proton.Span(18, 12), new Proton.Span(.1, .2));
+        emitter.addInitialize(new Proton.Mass(1));
+        emitter.addInitialize(new Proton.Radius(1, 12));
+        emitter.addInitialize(new Proton.Life(1, 2));
+        emitter.addInitialize(new Proton.V(new Proton.Span(1, 4), new Proton.Span(0, 360), 'polar'));
+        emitter.addBehaviour(new Proton.Alpha(1, 0));
+        emitter.addBehaviour(new Proton.Scale(1, 0));
+        emitter.addBehaviour(new Proton.Color('random'));
+        emitter.addBehaviour(new Proton.CrossZone(new Proton.CircleZone(x, y, 250), 'dead'));
+	    emitter.addBehaviour(new Proton.Gravity(3));
+        //emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
+        emitter.p.x = x;
+        emitter.p.y = y;
+
+        //add emitter to the proton
+        proton.addEmitter(emitter);
+
+        console.log("puffing away at", x, y);
+        emitter.emit('once', true);
+    }
     // event handler for food collect
     self.onFoodCollect = function( food ) {
         console.log("Collected letter", food.letter, "at", food.location);
         var cell = document.getElementById(food.location);
         var rect = cell.getBoundingClientRect();
         //console.log(rect.top, rect.right, rect.bottom, rect.left);
+
         
         var effectDiv = document.createElement("div");
         effectDiv.appendChild(document.createTextNode(food.letter.toUpperCase()));
@@ -88,6 +134,11 @@ var Peli = function () {
 
         tween.chain(tweenFade);
         tween.start();
+
+        var x = rect.left;
+        var y = rect.top;
+        
+        self.puff(x,y);
     }
     
     // event handler for word completion
@@ -559,5 +610,5 @@ function animate() {
 
     requestAnimationFrame( animate ); // js/RequestAnimationFrame.js needs to be included too.
     TWEEN.update();
-    
+    proton.update();
 }
