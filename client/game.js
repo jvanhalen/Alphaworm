@@ -178,6 +178,30 @@ var Peli = function () {
     // palauttaa tiedon mik‰ osa worm-spritest‰ 
     // piirret‰‰n mihinkin ruutuun.
     self.getWormTileByPosition = function ( positions, i ) {
+
+	var worm = {
+	    tail : {
+		up :'-61px -41px',
+		down:'-41px -41px',
+		right: '-41px -61px',
+		left:  '-61px -61px'
+	    },
+	    head : {
+		down : '-21px -61px',
+		up: '-1px -61px',
+		right: '-1px -41px',
+		left: '-21px -41px'
+	    },
+	    body : {
+		horizontal: '-1px -1px',
+		vertical: '-21px -1px',
+		up_right: '-61px -21px',
+		up_left: '-41px -21px',
+		down_right: '-1px -21px',
+		down_left: '-21px -21px'
+	    }
+	}
+	
         if ( self.gameArea === undefined) return '-1px -1px';
         
         // Oletus: sijainnit ovat j‰rjestyksess h‰nn‰st‰ p‰‰h‰n.
@@ -197,17 +221,28 @@ var Peli = function () {
             if ( next.x == current.x ) 
             {
                 if ( current.y < next.y )
-                    return '-41px -41px';
-                else
-                    return '-61px -41px';
+		{
+		    if ( next.y - current.y > 1 ) return worm.tail.up;
+                    else			  return worm.tail.down;
+		}
+                else 
+		{
+		    if ( current.y - next.y > 1 ) return worm.tail.down;
+                    else		          return worm.tail.up;
+		}
             }
             else if ( next.y == current.y ) 
             { 
-                if ( current.x < next.x )
-                    return '-41px -61px';
-                else
-                    return '-61px -61px';
-
+                if ( current.x < next.x ) 
+		{
+		    if (next.x - current.x > 1) return worm.tail.left;
+                    else			return worm.tail.right;
+                }
+		else
+		{
+		    if ( current.x - next.x > 1 ) return worm.tail.right;
+                    else			  return worm.tail.left;
+		}
             }
         } 
         else if ( i == positions.length-1) // p‰‰
@@ -218,16 +253,28 @@ var Peli = function () {
             if ( prev.x == current.x ) 
             {
                 if ( prev.y < current.y ) 
-                    return '-21px -61px';
-                else
-                    return '-1px -61px';
+		{
+                    if (  current.y - prev.y > 1 ) return worm.head.up;
+		    else			   return worm.head.down;
+                }
+		else
+		{
+		    if (  prev.y - current.y > 1 ) return worm.head.down;
+		    else			   return worm.head.up;
+		}
             }
             else if ( prev.y == current.y ) 
             {
                 if ( prev.x < current.x ) 
-                    return '-1px -41px';
+		{
+		    if ( current.x - prev.x > 1 ) return worm.head.left;
+		    else		          return worm.head.right;
+		}
                 else
-                    return '-21px -41px';
+		{
+		    if ( prev.x - current.x > 1 ) return worm.head.right;
+                    else		          return worm.head.left;
+		}
             }
         }
         else  // keskiruumista
@@ -240,65 +287,173 @@ var Peli = function () {
             // menn‰‰n suoraan    A
             //                    |
             //                    v
-            if ( prev.y == next.y ) return '-21px -1px';
+            if ( prev.y == next.y ) return worm.body.vertical;
             // menn‰‰n suoraan    
             //
             // <--->
-            if ( prev.x == next.x ) return '-1px -1px';
+            if ( prev.x == next.x ) return worm.body.horizontal;
             
-            // ---> 
+            // --->  Going right or left with border crossing
             if ( prev.x < current.x  ) {
-                // k‰‰nnyt‰‰n alas
-                // ---+
-                //    |
-                //    V
-                if ( current.y < next.y) return '-21px -21px';
-                // k‰‰nnyt‰‰n ylˆs
-                //    A
-                //    |
-                // ---+
-                if ( current.y > next.y) return '-41px -21px';
+
+		
+		if ( current.x - prev.x > 1 ) 
+		{
+		    if ( current.y < next.y)  
+		    {
+			if ( next.y - current.y > 1 ) return worm.body.up_right;
+			else			      return worm.body.down_right;
+		    }
+		    
+                    if ( current.y > next.y) 
+		    {
+			if ( current.y - next.y > 1 ) return worm.body.down_right;
+			else		              return worm.body.up_right;
+		    }
+		}
+		else {
+                    // k‰‰nnyt‰‰n alas
+                    // ---+
+                    //    |
+                    //    V
+		    
+                    if ( current.y < next.y) 
+		    {
+			if ( next.y - current.y > 1 ) return worm.body.up_left;
+			else			  return worm.body.down_left;
+		    }
+                    // k‰‰nnyt‰‰n ylˆs
+                    //    A
+                    //    |
+                    // ---+
+                    if ( current.y > next.y) 
+		    {
+			if ( current.y - next.y > 1 ) return worm.body.down_left;
+			else		          return worm.body.up_left;
+		    }
+		}
             }
-            // <---
-            else if ( prev.x > current.x  ) {
+            // <--- Going left or right with border crossing
+            else if ( prev.x > current.x  ) 
+	    {
                 
-                // k‰‰nnyt‰‰n alas
-                //    +---
-                //    |
-                //    V
-                if ( current.y < next.y) return '-1px -21px';
-                
-                // k‰‰nnyt‰‰n ylˆs
-                //    A
-                //    |
-                //    +---
-                if ( current.y > next.y) return '-61px -21px';
+		if ( prev.x - current.x > 1 )
+		{
+		    if ( current.y < next.y) 
+		    {
+			if ( next.y - current.y > 1 ) return worm.body.up_left;
+			else			      return worm.body.down_left;
+                    }
+
+                    if ( current.y > next.y) 
+		    {
+			if ( current.y - next.y > 1 ) return worm.body.down_left;
+			else			      return worm.body.up_left;
+		    }
+		}
+		else 
+		{
+                    // k‰‰nnyt‰‰n alas
+                    //    +---
+                    //    |
+                    //    V
+                    if ( current.y < next.y) 
+		    {
+			if ( next.y - current.y > 1 ) return worm.body.up_right;
+			else			      return worm.body.down_right;
+                    }
+                    // k‰‰nnyt‰‰n ylˆs
+                    //    A
+                    //    |
+                    //    +---
+                    if ( current.y > next.y) 
+		    {
+			if ( current.y - next.y > 1 ) return worm.body.down_right;
+			else			  return worm.body.up_right;
+		    }
+		}
             } 
             //   |
-            //   V
+            //   V going down or up with border crossing
             else if ( prev.y < current.y ) {
 
-                // k‰‰nnyt‰‰n oikealle
-                //   | 
-                //   +-->                
-                if ( current.x < next.x) return '-61px -21px';
-                // k‰‰nnyt‰‰n vasemmalle
-                //   |
-                // <-+
-                if ( current.x > next.x) return '-41px -21px';
+
+		if ( current.y - prev.y > 1 )
+		{
+
+                    if ( current.x < next.x) 
+		    {
+			if ( next.x - current.x > 1 ) return worm.body.down_left;
+			else			  return worm.body.down_right;
+		    }
+                    // k‰‰nnyt‰‰n vasemmalle
+                    //   |
+                    // <-+
+                    if ( current.x > next.x) 
+		    {
+			if ( current.x - next.x > 1 ) return worm.body.down_right;
+			else			  return worm.body.down_left;
+		    }
+		}
+		else
+		{
+                    // k‰‰nnyt‰‰n oikealle
+                    //   | 
+                    //   +-->                
+                    if ( current.x < next.x) 
+		    {
+			if ( next.x - current.x > 1 ) return worm.body.up_left;
+			else			  return worm.body.up_right;
+		    }
+                    // k‰‰nnyt‰‰n vasemmalle
+                    //   |
+                    // <-+
+                    if ( current.x > next.x) 
+		    {
+			if ( current.x - next.x > 1 ) return worm.body.up_right;
+			else			  return worm.body.up_left;
+		    }
+		}
             } 
             //   A
-            //   |
+            //   | going up or down with border crossing.
             else if ( prev.y > current.y ) {
 
-                // k‰‰nnyt‰‰n oikealle
-                //   +-->
-                //   | 
-                if ( current.x < next.x) return '-1px -21px';
-                // k‰‰nnyt‰‰n vasemmalle
-                // <-+
-                //   |
-                if ( current.x > next.x) return '-21px -21px';
+
+		if ( prev.y - current.y > 1 )
+		{
+		    if ( current.x < next.x) 
+		    {
+			if ( next.x - current.x > 1 ) return worm.body.up_left;
+			else			  return worm.body.up_right;
+		    }
+                    // k‰‰nnyt‰‰n vasemmalle
+                    // <-+
+                    //   |
+                    if ( current.x > next.x) 
+		    {
+			if ( current.x - next.x > 1  ) return worm.body.up_right;
+			else		           return worm.body.up_left;
+		    }
+		}
+		else {
+                    // k‰‰nnyt‰‰n oikealle
+                    //   +-->
+                    //   | 
+                    if ( current.x < next.x) 
+		    {
+			if ( next.x - current.x > 1 ) return worm.body.down_left;
+			else			  return worm.body.down_right;
+		    }
+                    // k‰‰nnyt‰‰n vasemmalle
+                    // <-+
+                    //   |
+                    if ( current.x > next.x) 
+		    {
+			if ( current.x - next.x > 1  ) return worm.body.down_right;
+			else		           return worm.body.down_left;
+		    }
+		}
             }
             
         }
@@ -441,7 +596,7 @@ var Peli = function () {
 
         // Puhdista pelilauta
         self.varitaPelilauta();
-
+	    
         // Render worms
         for (var id=0; id<msg.worms.length; id++) {
 
