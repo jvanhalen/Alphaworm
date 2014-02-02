@@ -109,6 +109,7 @@ td {
 #foodEffect {
     font-weight: bold;
     text-shadow: 0px 0px 5px white;
+
 }
 #particles{
     position: absolute;
@@ -117,4 +118,5 @@ td {
     width: 1px;
     height: 1px;
     overflow: visible;
+
 }

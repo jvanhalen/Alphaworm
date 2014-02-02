@@ -1,5 +1,7 @@
+
 var proton = new Proton;
 var renderer;
+
 var worm = function() {  // T√§ll√§ m√§√§rittelyll√§ varaudutaan siihen ett√§ lieroja on tulevaisuudessa useampiakin
     this.name = "liero";
     this.color = "blue";
@@ -48,6 +50,7 @@ var Peli = function () {
     
     self.word = undefined;
 
+
     // setup particle emitter
     self.proton = proton;
     
@@ -91,6 +94,7 @@ var Peli = function () {
         console.log("puffing away at", x, y);
         emitter.emit('once', true);
     }
+
     // event handler for food collect
     self.onFoodCollect = function( food ) {
         console.log("Collected letter", food.letter, "at", food.location);
@@ -135,10 +139,12 @@ var Peli = function () {
         tween.chain(tweenFade);
         tween.start();
 
+
         var x = rect.left;
         var y = rect.top;
         
         self.puff(x,y);
+
     }
     
     // event handler for word completion
@@ -179,6 +185,7 @@ var Peli = function () {
     // piirret‰‰n mihinkin ruutuun.
     self.getWormTileByPosition = function ( positions, i ) {
 
+
 	var worm = {
 	    tail : {
 		up :'-61px -41px',
@@ -202,6 +209,7 @@ var Peli = function () {
 	    }
 	}
 	
+
         if ( self.gameArea === undefined) return '-1px -1px';
         
         // Oletus: sijainnit ovat j‰rjestyksess h‰nn‰st‰ p‰‰h‰n.
@@ -221,6 +229,7 @@ var Peli = function () {
             if ( next.x == current.x ) 
             {
                 if ( current.y < next.y )
+
 		{
 		    if ( next.y - current.y > 1 ) return worm.tail.up;
                     else			  return worm.tail.down;
@@ -243,6 +252,7 @@ var Peli = function () {
 		    if ( current.x - next.x > 1 ) return worm.tail.right;
                     else			  return worm.tail.left;
 		}
+
             }
         } 
         else if ( i == positions.length-1) // p‰‰
@@ -253,6 +263,7 @@ var Peli = function () {
             if ( prev.x == current.x ) 
             {
                 if ( prev.y < current.y ) 
+
 		{
                     if (  current.y - prev.y > 1 ) return worm.head.up;
 		    else			   return worm.head.down;
@@ -262,10 +273,12 @@ var Peli = function () {
 		    if (  prev.y - current.y > 1 ) return worm.head.down;
 		    else			   return worm.head.up;
 		}
+
             }
             else if ( prev.y == current.y ) 
             {
                 if ( prev.x < current.x ) 
+
 		{
 		    if ( current.x - prev.x > 1 ) return worm.head.left;
 		    else		          return worm.head.right;
@@ -275,6 +288,7 @@ var Peli = function () {
 		    if ( prev.x - current.x > 1 ) return worm.head.right;
                     else		          return worm.head.left;
 		}
+
             }
         }
         else  // keskiruumista
@@ -287,6 +301,7 @@ var Peli = function () {
             // menn‰‰n suoraan    A
             //                    |
             //                    v
+
             if ( prev.y == next.y ) return worm.body.vertical;
             // menn‰‰n suoraan    
             //
@@ -449,6 +464,7 @@ var Peli = function () {
 			else		               return worm.body.down_left;
 		    }
 		}
+
             }
             
         }
@@ -591,7 +607,7 @@ var Peli = function () {
 
         // Puhdista pelilauta
         self.varitaPelilauta();
-	    
+
         // Render worms
         for (var id=0; id<msg.worms.length; id++) {
 
@@ -599,6 +615,7 @@ var Peli = function () {
 
                 var cell = document.getElementById(msg.worms[id].location[x]); 
                 //background: color position size repeat origin clip attachment image;
+
                  cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat  " + 
                         self.getWormTileByPosition(msg.worms[id].location, x);
             }
