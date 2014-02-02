@@ -293,10 +293,11 @@ var Peli = function () {
             // <--->
             if ( prev.x == next.x ) return worm.body.horizontal;
             
+
+
             // --->  Going right or left with border crossing
             if ( prev.x < current.x  ) {
 
-		
 		if ( current.x - prev.x > 1 ) 
 		{
 		    if ( current.y < next.y)  
@@ -353,19 +354,13 @@ var Peli = function () {
 		}
 		else 
 		{
-                    // k‰‰nnyt‰‰n alas
-                    //    +---
-                    //    |
-                    //    V
+
                     if ( current.y < next.y) 
 		    {
 			if ( next.y - current.y > 1 ) return worm.body.up_right;
 			else			      return worm.body.down_right;
                     }
-                    // k‰‰nnyt‰‰n ylˆs
-                    //    A
-                    //    |
-                    //    +---
+                    
                     if ( current.y > next.y) 
 		    {
 			if ( current.y - next.y > 1 ) return worm.body.down_right;
@@ -373,7 +368,7 @@ var Peli = function () {
 		    }
 		}
             } 
-            //   |
+
             //   V going down or up with border crossing
             else if ( prev.y < current.y ) {
 
@@ -425,7 +420,7 @@ var Peli = function () {
 		    if ( current.x < next.x) 
 		    {
 			if ( next.x - current.x > 1 ) return worm.body.up_left;
-			else			  return worm.body.up_right;
+			else			      return worm.body.up_right;
 		    }
                     // k‰‰nnyt‰‰n vasemmalle
                     // <-+
@@ -433,7 +428,7 @@ var Peli = function () {
                     if ( current.x > next.x) 
 		    {
 			if ( current.x - next.x > 1  ) return worm.body.up_right;
-			else		           return worm.body.up_left;
+			else		               return worm.body.up_left;
 		    }
 		}
 		else {
@@ -443,7 +438,7 @@ var Peli = function () {
                     if ( current.x < next.x) 
 		    {
 			if ( next.x - current.x > 1 ) return worm.body.down_left;
-			else			  return worm.body.down_right;
+			else			      return worm.body.down_right;
 		    }
                     // k‰‰nnyt‰‰n vasemmalle
                     // <-+
@@ -451,7 +446,7 @@ var Peli = function () {
                     if ( current.x > next.x) 
 		    {
 			if ( current.x - next.x > 1  ) return worm.body.down_right;
-			else		           return worm.body.down_left;
+			else		               return worm.body.down_left;
 		    }
 		}
             }
@@ -604,7 +599,7 @@ var Peli = function () {
 
                 var cell = document.getElementById(msg.worms[id].location[x]); 
                 //background: color position size repeat origin clip attachment image;
-                 cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat " + 
+                 cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat  " + 
                         self.getWormTileByPosition(msg.worms[id].location, x);
             }
 
