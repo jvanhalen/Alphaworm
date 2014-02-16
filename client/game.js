@@ -55,14 +55,6 @@ var Peli = function () {
     self.proton = proton;
     
 
-    
-
-
-    
-
-
-    
-
     var divelem = document.getElementById("particles");
     if ( divelem == undefined ){
         console.log("CANT FIND IT");
@@ -154,7 +146,7 @@ var Peli = function () {
         tmp.style.opacity = 1.0;
         tmp.style.visibility = 'visible';
         tmp.style.transform = 'scaleX(1)';
-
+        tmp.style["-webkit-transform"] = 'scaleX(1)';
         var tween = new TWEEN.Tween( { y: 0 } )
             .to( { y: 400 }, 1000 )
             .easing( TWEEN.Easing.Bounce.Out )
@@ -172,6 +164,7 @@ var Peli = function () {
                 var tmp = document.getElementById("completed");
                 tmp.style.opacity = this.o;
                 tmp.style.transform = 'scaleX('+this.s+')';
+		tmp.style["-webkit-transform"] = 'scaleX('+this.s+')';
                 tmp.style.left = (document.body.clientWidth / 2) + 'px';
                 if ( this.s >= 12 ) {
                     tmp.style.visibility = 'hidden';
@@ -263,7 +256,6 @@ var Peli = function () {
             if ( prev.x == current.x ) 
             {
                 if ( prev.y < current.y ) 
-
 		{
                     if (  current.y - prev.y > 1 ) return worm.head.up;
 		    else			   return worm.head.down;
@@ -616,7 +608,7 @@ var Peli = function () {
                 var cell = document.getElementById(msg.worms[id].location[x]); 
                 //background: color position size repeat origin clip attachment image;
 
-                 cell.style["background"] = "#000000 url('"+self.worm.sprite.src+"') no-repeat  " + 
+                 cell.style["background"] = "#ffffff url('"+self.worm.sprite.src+"') no-repeat  " + 
                         self.getWormTileByPosition(msg.worms[id].location, x);
             }
 
