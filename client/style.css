@@ -39,12 +39,12 @@ input:focus {
 }
 
 #pelilauta {
+    position: relative;
     margin-left: 20%;
     border-left: 1px solid gray;
     margin-right: 20%;
     border-right: 1px solid gray;
     text-align: center;
-
 }
 
 #rankinglista {
@@ -84,6 +84,7 @@ table, th, td, tr {
 td {
 	height: 19px;
 	width: 19px;
+	position: relative;
 }
 
 #rankings {
