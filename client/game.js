@@ -85,6 +85,35 @@ var Peli = function () {
 
         console.log("puffing away at", x, y);
         emitter.emit('once', true);
+    },
+
+    self.makeGameBoardPieces = function( x, y )
+    {    
+        
+        var emitter = new Proton.Emitter();
+        emitter.rate = new Proton.Rate(new Proton.Span(100), new Proton.Span(.1, .2));
+	emitter.addInitialize(new Proton.ImageTarget(['media/bgpiece.png'], 20, 20));
+        emitter.addInitialize(new Proton.Mass(0.8));
+
+        emitter.addInitialize(new Proton.Life(1, 4));
+        emitter.addInitialize(new Proton.V(new Proton.Span(20, 10), new Proton.Span(-45, 45), 'polar'));
+	
+	emitter.addBehaviour(new Proton.Rotate(new Proton.Span(0, 360), new Proton.Span(-15, 15), 'add'));
+
+	emitter.addBehaviour(new Proton.Alpha(1, 0));
+        emitter.addBehaviour(new Proton.Scale(1, 1));
+        emitter.addBehaviour(new Proton.Color('random'));
+        emitter.addBehaviour(new Proton.CrossZone(new Proton.CircleZone(x, y, window.innerWidth), 'dead'));
+	emitter.addBehaviour(new Proton.Gravity(10));
+        //emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
+        emitter.p.x = x;
+        emitter.p.y = y;
+
+        //add emitter to the proton
+        proton.addEmitter(emitter);
+
+        console.log("Crushing board at", x, y);
+        emitter.emit('once', true);
     }
 
     // event handler for food collect
@@ -150,6 +179,8 @@ var Peli = function () {
         tmp.style.visibility = 'visible';
         tmp.style.transform = 'scaleX(1)';
         tmp.style["-webkit-transform"] = 'scaleX(1)';
+        tmp.style["-o-transform"] = 'scaleX(1)';
+        tmp.style["-ms-transform"] = 'scaleX(1)';
         var tween = new TWEEN.Tween( { y: 0 } )
             .to( { y: 400 }, 1000 )
             .easing( TWEEN.Easing.Bounce.Out )
@@ -168,6 +199,8 @@ var Peli = function () {
                 tmp.style.opacity = this.o;
                 tmp.style.transform = 'scaleX('+this.s+')';
 		tmp.style["-webkit-transform"] = 'scaleX('+this.s+')';
+		tmp.style["-o-transform"] = 'scaleX('+this.s+')';
+		tmp.style["-ms-transform"] = 'scaleX('+this.s+')';
                 tmp.style.left = (document.body.clientWidth / 2) + 'px';
                 if ( this.s >= 12 ) {
                     tmp.style.visibility = 'hidden';
@@ -467,29 +500,97 @@ var Peli = function () {
         console.log("ERROR: should not reach here! getWormTileByPosition");
         return "-1px -1px";
     },
-    // earthquake occurs when worm hits itself or game ends.
-    self.wiggleBoard = function() {
 
-        var tween = new TWEEN.Tween( {  } )
-            .to( {  }, 750 )
-            .easing( TWEEN.Easing.Back.Out )
-            .onUpdate( function () {
-                var tmp = document.getElementById("pelilauta");
-                tmp.style["top"] = 20*Math.random() + "px";
-                tmp.style["left"] = 20*Math.random() +"px";
-            }).start();
+    self.initBoardEffect = function() {
+	var drop = new TWEEN.Tween( { s: 0.0 } )
+	    .to( { s : 1.0 }, 1000)
+	    .easing( TWEEN.Easing.Bounce.Out )
+	    .onStart( function(){
+		var tmp = document.getElementById('pelilauta');
+		tmp.style.top = "0px";
+	    })
+	    .onUpdate( function(){
+		console.log('updating.....');
+		for(var id = 0; id < self.gameArea.height*self.gameArea.width; id++){
+		    var tmp = document.getElementById(id);
+		    tmp.style["transform"] = "scale("+this.s+")";			
+		    tmp.style["-webkit-transform"] = "scale("+this.s+")";			
+		    tmp.style["-ms-transform"] = "scale("+this.s+")";			
+		    tmp.style["-o-transform"] = "scale("+this.s+")";			
+		}
+			
+	    }).start();
+
+
 
     },
+    // earthquake occurs when worm hits itself or game ends.
+    self.killBoardEffect = function() {
+
+
+        var wiggle = new TWEEN.Tween( { s: 20.0 } )
+            .to( { s:0.0 }, 1750 )
+            .easing( TWEEN.Easing.Bounce.InOut )
+            .onUpdate( function () {
+                var tmp = document.getElementById("pelilauta");
+                tmp.style["top"] = this.s*Math.random() + "px";
+                tmp.style["left"] = this.s*Math.random() +"px";
+            }).start();
+	var drop = new TWEEN.Tween( { y: 0.0 } )
+	    .to( { y : window.innerHeight}, 750)
+	    .easing( TWEEN.Easing.Exponential.In )
+	    .onUpdate( function(){
+                var tmp = document.getElementById("pelilauta");
+                tmp.style["top"] = this.y+"px";
+
+	    })
+	    .onComplete( function(){
+		self.makeGameBoardPieces( window.innerWidth/2, window.innerHeight*1.25);
+	    })
+	wiggle.chain(drop);
+	
+    },
+
+    self.wiggleWorm = function( worm ){
+	var tween = new TWEEN.Tween( { s: 4.0, w : worm })
+	    .to ( { s: 0.0 }, 1750)
+	    .easing( TWEEN.Easing.Back.Out)
+	    .onUpdate( function(){
+		for( var i = 0;i < this.w.length; i++) {
+		    var tmp = document.getElementById(this.w.location[i]);
+		    tmp.style["top"] = this.s*Math.random() + "px";
+		    tmp.style["left"] = this.s*Math.random() + "px";
+		}
+	    })
+	    .onComplete( function(){
+		for( var i = 0;i < this.w.length; i++) {
+		    var tmp = document.getElementById(this.w.location[i]);
+		    tmp.style["top"] = "0px";
+		    tmp.style["left"] = "0px";
+		}
+	    }).start();
+    
+    },
+
     self.onGameStart = function() {
+
         self.initGame();	
+	self.initBoardEffect();
         self.playMusic(self.preferredVolume);
     },
 
-    self.onGameEnd = function() {
+    self.onGameEnd = function( worms ) {
 
         self.kaynnissa = false;
         self.stopMusic();
-	self.wiggleBoard();
+	self.killBoardEffect();
+	for( var i = 0; i < worms.length; i++) {
+	    self.wiggleWorm(worms[i]);
+	}
+	// prevent false word completions
+	self.word = undefined;
+	// prevent false letter collects
+        self.foods = [];
     },
 
     self.init = function() {
@@ -557,7 +658,6 @@ var Peli = function () {
 
     self.initGameboard = function() {
         console.log("initGameboard");
-
         document.getElementById('pelilauta').innerHTML = "";
         var pelilauta = '<p id="pistetilanne"></p>';
         // Luo ruudukko
@@ -575,11 +675,18 @@ var Peli = function () {
         //pelilauta += '<input id="input" name="syotekentta" size="1" maxLength="1" />';
         pelilauta += "W = up, A = left, S = down, D = right";
         pelilauta += "&nbsp;&nbsp;&nbsp;";
-        pelilauta += '<input id="aloitapeli_painike" type="submit" value="AloitaPeli" onclick="game.aloitaPeli()">';
+        //pelilauta += '<input id="aloitapeli_painike" type="submit" value="AloitaPeli" onclick="game.aloitaPeli()">';
 
         document.getElementById('pelilauta').innerHTML = pelilauta;
-
+	
         self.varitaPelilauta();
+	// first time we are very small
+        for(var i=0; i<self.gameArea.height*self.gameArea.width; i++) {
+	    document.getElementById(i).style["-webkit-transform"] = "scale(0)";
+	    document.getElementById(i).style["transform"] = "scale(0)";
+	    document.getElementById(i).style["-o-transform"] = "scale(0)";
+	    document.getElementById(i).style["-ms-transform"] = "scale(0)";
+	}
     },
 
     self.varitaPelilauta = function() {
@@ -590,6 +697,7 @@ var Peli = function () {
 
                 document.getElementById(id).style.background = self.gameArea.color;
                 document.getElementById(id).innerHTML = "&nbsp;";
+
 
             }
         }
@@ -700,8 +808,7 @@ var Peli = function () {
 	    self.onGameStart();
         }
         if (msg.phase == "END") {
-
-            self.onGameEnd();
+            self.onGameEnd( msg.worms );
         }
     },
 
