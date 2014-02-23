@@ -466,7 +466,31 @@ var Peli = function () {
         // default, should not be here.
         console.log("ERROR: should not reach here! getWormTileByPosition");
         return "-1px -1px";
-    }
+    },
+    // earthquake occurs when worm hits itself or game ends.
+    self.wiggleBoard = function() {
+
+        var tween = new TWEEN.Tween( {  } )
+            .to( {  }, 750 )
+            .easing( TWEEN.Easing.Back.Out )
+            .onUpdate( function () {
+                var tmp = document.getElementById("pelilauta");
+                tmp.style["top"] = 20*Math.random() + "px";
+                tmp.style["left"] = 20*Math.random() +"px";
+            }).start();
+
+    },
+    self.onGameStart = function() {
+        self.initGame();	
+        self.playMusic(self.preferredVolume);
+    },
+
+    self.onGameEnd = function() {
+
+        self.kaynnissa = false;
+        self.stopMusic();
+	self.wiggleBoard();
+    },
 
     self.init = function() {
 
@@ -673,12 +697,11 @@ var Peli = function () {
 
         }
         if (msg.phase == "INIT") {
-            self.initGame();
-            self.playMusic(self.preferredVolume);
+	    self.onGameStart();
         }
         if (msg.phase == "END") {
-            self.stopMusic();
-            self.endGame();
+
+            self.onGameEnd();
         }
     },
 
@@ -738,10 +761,7 @@ var Peli = function () {
         return false;
     },
 
-    self.endGame = function() {
-        self.kaynnissa = false;
-        self.stopMusic();
-    },
+    
 
     self.isRunning = function() {
         return self.kaynnissa;
