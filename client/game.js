@@ -112,6 +112,9 @@ var Peli = function () {
             .onUpdate( function () {
                 var tmp = document.getElementById("foodEffect");
                 tmp.style.transform = "scale("+this.s+")";
+                tmp.style["-webkit-transform"] = "scale("+this.s+")";
+                tmp.style["-o-transform"] = "scale("+this.s+")";
+                tmp.style["-ms-transform"] = "scale("+this.s+")";
                 
             });
 
