@@ -33,6 +33,7 @@ var MessageHandler = function(game) {
                     document.getElementById('infoteksti').innerHTML = "Kirjauduit käyttäjänä <strong>" +
                     msg.username + "</strong>";
                     document.getElementById('infoteksti').innerHTML += '<br /><input id="poistu_painike" type="submit" value="Poistu" onclick="poistu();">';
+		    document.getElementById('infoteksti').innerHTML += '<input id="aloitapeli_painike" type="submit" value="AloitaPeli" onclick="game.aloitaPeli()">';
                     self.game.initGame(null);
                 }
                 else {
