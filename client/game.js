@@ -217,29 +217,28 @@ var Peli = function () {
 
 	var worm = {
 	    tail : {
-		up :'-61px -41px',
-		down:'-41px -41px',
-		right: '-41px -61px',
-		left:  '-61px -61px'
+		up : { rect: 'rect(41px,80px,60px,61px)', top:'-40px', left: '-60px' },
+    		down: { rect: 'rect(41px,60px,60px,41px)', top:'-40px', left: '-40px' },
+    		right: { rect: 'rect(61px,60px,80px,41px)', top:'-60px', left: '-40px' },
+    		left:  { rect: 'rect(61px,80px,80px,61px)', top:'-60px', left: '-60px' }
 	    },
 	    head : {
-		down : '-21px -61px',
-		up: '-1px -61px',
-		right: '-1px -41px',
-		left: '-21px -41px'
+		down : {rect: 'rect(61px,40px,80px,21px)', top:'-60px', left:'20px' },
+		up: { rect: 'rect(61px,20px,80px,1px)', top: '-60px', left: '0px' },
+		right: { rect: 'rect(41px, 20px,60px,1px )', top: '-40px', left: '0px' },
+		left: { rect: 'rect(41px, 40px , 60px, 21px )', top:'-40px', left: '-20px' }
 	    },
 	    body : {
-		horizontal: '-1px -1px',
-		vertical: '-21px -1px',
-		up_right: '-61px -21px',
-		up_left: '-41px -21px',
-		down_right: '-1px -21px',
-		down_left: '-21px -21px'
+		horizontal: { rect: 'rect(1px,20px,20px,1px)', top:'0px', left:'0px' },
+		vertical: { rect: 'rect(1px,40px,20px,21px )', top:'0px', left:'-20px' },
+		up_right: { rect: 'rect(21px,80px,40px,61px)', top:'-20px', left:'-60px'},
+		up_left: { rect: 'rect(21px,60px,40px,41px)', top:'-20px', left:'-40px' },
+		down_right: { rect: 'rect(21px,20px,40px,1px)', top:'-20px', left:'0px' },
+		down_left: { rect: 'rect(21px,40px,40px,21px)', top:'-20px,', left:'-20px' }
 	    }
 	}
-	
 
-        if ( self.gameArea === undefined) return '-1px -1px';
+        if ( self.gameArea === undefined) return worm.body.horizontal;
         
         // Locations are expected to be ordered from tail to head.
 
@@ -498,7 +497,7 @@ var Peli = function () {
         }
         // default, should not be here.
         console.log("ERROR: should not reach here! getWormTileByPosition");
-        return "-1px -1px";
+        return worm.body.horizontal;
     },
 
     self.initBoardEffect = function() {
@@ -666,7 +665,7 @@ var Peli = function () {
             pelilauta += '<tr>'; // Luo uusi rivi
             for(var j=0; j<self.gameArea.width; j++) {
                 var id = (j+(i*self.gameArea.height));
-                var ruutu = '<td id="' + id + '">&nbsp;</td>';
+                var ruutu = '<td><div class="cell"><img id="' + id + '" src="./media/worm.png"></div></td>';
                 pelilauta += ruutu;
             }
             pelilauta += '</tr>';
@@ -742,9 +741,12 @@ var Peli = function () {
 
                 var cell = document.getElementById(msg.worms[id].location[x]); 
                 //background: color position size repeat origin clip attachment image;
-
-                 cell.style["background"] = "#ffffff url('"+self.worm.sprite.src+"') no-repeat  " + 
-                        self.getWormTileByPosition(msg.worms[id].location, x);
+		cell.style["visibility"] = "visible";
+		var clipping = self.getWormTileByPosition(msg.worms[id].location, x);
+		
+		//cell.style["clip"] = "rect(
+                /*cell.style["background"] = "#ffffff url('"+self.worm.sprite.src+"') no-repeat  " + 
+                        self.getWormTileByPosition(msg.worms[id].location, x);*/
             }
 
         }
