@@ -105,7 +105,7 @@ var Peli = function () {
         emitter.addBehaviour(new Proton.Color('random'));
         emitter.addBehaviour(new Proton.CrossZone(new Proton.CircleZone(x, y, window.innerWidth), 'dead'));
 	emitter.addBehaviour(new Proton.Gravity(10));
-        //emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
+        emitter.addBehaviour(new Proton.RandomDrift(10, 10, .05));
         emitter.p.x = x;
         emitter.p.y = y;
 
