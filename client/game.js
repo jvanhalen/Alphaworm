@@ -241,7 +241,7 @@ var Peli = function () {
 
         if ( self.gameArea === undefined) return '-1px -1px';
         
-        // Oletus: sijainnit ovat j‰rjestyksess h‰nn‰st‰ p‰‰h‰n.
+        // Locations are expected to be ordered from tail to head.
 
         var current = { x:0,y:0 }
         var next = { x:0,y:0 }
@@ -250,8 +250,8 @@ var Peli = function () {
         current.y = Math.floor(positions[i] / self.gameArea.width); 
         current.x = positions[i] % self.gameArea.width;
         
-        if ( i == 0 ){ // h‰nt‰
-            // tsekkaa seuraava
+        if ( i == 0 ){ // tail
+            // next body part
             next.y = Math.floor(positions[i+1] / self.gameArea.width); 
             next.x = positions[i+1] % self.gameArea.width;
 
@@ -284,9 +284,9 @@ var Peli = function () {
 
             }
         } 
-        else if ( i == positions.length-1) // p‰‰
+        else if ( i == positions.length-1) // head
         {
-            // tsekkaa edelt‰v‰
+            // compute previous
             prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
             prev.x = positions[i-1] % self.gameArea.width;
             if ( prev.x == current.x ) 
@@ -319,19 +319,19 @@ var Peli = function () {
 
             }
         }
-        else  // keskiruumista
+        else  // regular body
         {
-            // tsekkaa edelt‰v‰ ja seuraava
+            // compute previous and next part 
             prev.y = Math.floor(positions[i-1] / self.gameArea.width); 
             prev.x = positions[i-1] % self.gameArea.width;
             next.y = Math.floor(positions[i+1] / self.gameArea.width); 
             next.x = positions[i+1] % self.gameArea.width;
-            // menn‰‰n suoraan    A
+            // go straight	  A
             //                    |
             //                    v
 
             if ( prev.y == next.y ) return worm.body.vertical;
-            // menn‰‰n suoraan    
+            // go straight
             //
             // <--->
             if ( prev.x == next.x ) return worm.body.horizontal;
