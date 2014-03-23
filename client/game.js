@@ -695,6 +695,7 @@ var Peli = function () {
                 var id = (j+(i*self.gameArea.height));
 
                 document.getElementById(id).style.background = self.gameArea.color;
+		document.getElementById(id).style["visibility"] = "hidden";
                 document.getElementById(id).innerHTML = "&nbsp;";
 
 
@@ -743,8 +744,10 @@ var Peli = function () {
                 //background: color position size repeat origin clip attachment image;
 		cell.style["visibility"] = "visible";
 		var clipping = self.getWormTileByPosition(msg.worms[id].location, x);
-		
-		//cell.style["clip"] = "rect(
+		cell.style["visibility"] = "visibile";
+		cell.style["clip"] = clipping.rect;
+		cell.style["top"] = clipping.top;
+		cell.style["left"] = clipping.left;
                 /*cell.style["background"] = "#ffffff url('"+self.worm.sprite.src+"') no-repeat  " + 
                         self.getWormTileByPosition(msg.worms[id].location, x);*/
             }

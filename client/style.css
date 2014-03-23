@@ -122,3 +122,10 @@ td {
     overflow: visible;
 
 }
+.cell {
+    position: relative;
+}
+.cell img {
+    position: absolute;
+    visibility: hidden;
+}
