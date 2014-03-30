@@ -542,14 +542,16 @@ var Game = function (messagehandler) {
 	    })
 	    .onComplete( function(){
 		self.makeGameBoardPieces( window.innerWidth/2, window.innerHeight*1.25);
+		self.displayEndStats();
 	    })
 	wiggle.chain(drop);
+	
 	
     },
     self.wiggleWorm = function( worm ){
 	var tween = new TWEEN.Tween( { s: 4.0, w : worm })
 	    .to ( { s: 0.0 }, 1750)
-	    .easing( TWEEN.Easing.Back.Out)
+	    .easing( TWEEN.Easing.Bounce.Out)
 	    .onUpdate( function(){
 		for( var i = 0;i < this.w.length; i++) {
 		    var tmp = document.getElementById(this.w.location[i]);
@@ -566,6 +568,88 @@ var Game = function (messagehandler) {
 	    }).start();
     
     },
+
+    self.displayEndStats = function( collected ) {
+	// reset scaling for next round
+	document.getElementById('gameoverstats').style["-webkit-transform"] = "scale(1)";
+	document.getElementById('gameoverstats').style["transform"] = "scale(1)";
+	document.getElementById('gameoverstats').style["-o-transform"] = "scale(1)";
+	document.getElementById('gameoverstats').style["-ms-transform"] = "scale(1)";
+
+	
+	// hide stars
+	for(var i = 1;i<4;i++){
+	    var name = "star"+i;
+	    document.getElementById(name).style["-webkit-transform"] = "scale(0)";
+	    document.getElementById(name).style["transform"] = "scale(0)";
+	    document.getElementById(name).style["-o-transform"] = "scale(0)";
+	    document.getElementById(name).style["-ms-transform"] = "scale(0)";
+	}
+	function createStarTween(which){
+
+	    var starTween = new TWEEN.Tween( { s: 0, id:which})
+		.to ( { s: 1.0 }, 550)
+		.easing( TWEEN.Easing.Elastic.Out)
+		.onUpdate( function(){
+		    var name = 'star'+this.id;
+		    document.getElementById(name).style["-webkit-transform"] = "scale("+this.s+")";
+		    document.getElementById(name).style["transform"] = "scale("+this.s+")";
+		    document.getElementById(name).style["-o-transform"] = "scale("+this.s+")";
+		    document.getElementById(name).style["-ms-transform"] = "scale("+this.s+")";
+		    
+		})
+		.onComplete(function(){
+		    if ( this.id < 3 ) {
+			createStarTween(this.id+1).start();
+		    } else {
+			var tmp = new TWEEN.Tween( { s: 1.0})
+			    .to ( { s: 0.0 }, 550)
+			    .easing( TWEEN.Easing.Elastic.InOut)
+			    .onUpdate( function(){
+				var name = 'gameoverstats';
+				document.getElementById(name).style["-webkit-transform"] = "scale("+this.s+")";
+				document.getElementById(name).style["transform"] = "scale("+this.s+")";
+				document.getElementById(name).style["-o-transform"] = "scale("+this.s+")";
+				document.getElementById(name).style["-ms-transform"] = "scale("+this.s+")";
+				
+			    })
+			    .onComplete(function(){
+				document.getElementById(name).style.top = '-600px';
+			    })
+			    .start();
+		    }
+		});
+	    return starTween;
+	}
+
+	var countTween = new TWEEN.Tween( { count: 0 })
+	    .to ( { count: 75 }, 2000)
+	    .easing( TWEEN.Easing.Quintic.Out)
+	    .onUpdate( function(){
+		
+		var tmp = document.getElementById("numcollected");
+		tmp.innerHTML = Math.floor(this.count);
+		
+	    });
+	    
+	
+	
+
+	var displayTween = new TWEEN.Tween( { y: -600 })
+	    .to ( { y: 0.0 }, 750)
+	    .easing( TWEEN.Easing.Bounce.Out)
+	    .onUpdate( function(){
+		
+		var tmp = document.getElementById("gameoverstats");
+		tmp.style["top"] = this.y + "px";
+		tmp.style["left"] = window.innerWidth/2-200 + "px";
+		
+	    });
+	countTween.chain(createStarTween(1));
+	displayTween.chain(countTween);
+	displayTween.start();
+    },
+    
     self.onGameStart = function() {
 
         self.initGame();	
@@ -574,7 +658,6 @@ var Game = function (messagehandler) {
     },
 
     self.onGameEnd = function( worms ) {
-
         //self.kaynnissa = false;
         //self.stopMusic();
 	self.killBoardEffect();
@@ -855,10 +938,11 @@ var Game = function (messagehandler) {
         }
 
     },
-
+    
     self.endGame = function() {
         self.inGame = false;
         self.stopMusic();
+	
     },
 
     self.isRunning = function() {

@@ -1,3 +1,34 @@
+.star {
+    width:50px;
+}
+#gold {
+    display: none;
+}
+#bronze {
+    display: inline;
+}
+#silver {
+    display: none;
+}
+#logo {
+    position: absolute;
+    top: -600px;
+    z-index: 2;
+}
+.stats {
+    font-size: 18pt;
+    
+}
+#gameoverstats {
+
+    position: absolute;
+    top: -600px;
+    z-index: 2;
+}
+BODY {
+    background-color: black;
+    color: white;
+}
 #container {
     overflow: hidden;
 }
