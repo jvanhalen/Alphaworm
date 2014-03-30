@@ -121,7 +121,10 @@ var Game = function (messagehandler) {
 
         
         var effectDiv = document.createElement("div");
-        effectDiv.appendChild(document.createTextNode(food.letter.toUpperCase()));
+        //effectDiv.appendChild(document.createTextNode(food.letter.toUpperCase()));
+	var img = document.createElement('img');
+	effectDiv.appendChild(img);
+	img.src = './media/collectible.png';
         effectDiv.style["position"]= "absolute";
         effectDiv.style["z-index"]= "3";
         effectDiv.style["top"] = rect.top + "px";
@@ -654,7 +657,7 @@ var Game = function (messagehandler) {
             for(var j=0; j<self.gameArea.width; j++) {
                 var id = (j+(i*self.gameArea.height));
                 var grid = 
-		    '<td><div class="cell"><img id="' + id + '" src="./media/worm.png"></div></td>';
+		    '<td><div class="cell"><img class="wormimage" id="' + id + '" src="./media/worm.png"></div></td>';
                 gameboard += grid;
             }
             gameboard += '</tr>';
@@ -722,6 +725,7 @@ var Game = function (messagehandler) {
             for (var x=0; x<msg.worms[id].location.length; x++) {
 
 		var cell = document.getElementById(msg.worms[id].location[x]); 
+		cell.src = './media/worm.png';
 		var clipping = self.getWormTileByPosition(msg.worms[id].location, x);
 
 		cell.style["visibility"] = "visible";
@@ -747,15 +751,18 @@ var Game = function (messagehandler) {
         self.foods = JSON.parse(JSON.stringify(msg.food));
         // Render foods
         for (var x=0; x<msg.food.length; x++) {
-            document.getElementById(msg.food[x].location).bgColor = msg.food[x].color;
-        }
-
+            //document.getElementById(msg.food[x].location).bgColor = msg.food[x].color;
+	    var cell = document.getElementById(msg.food[x].location);
+	    cell.src = './media/collectible.png';
+            cell.style["clip"] = 'auto';
+	    cell.style["visibility"] = "visible";
+	}
 	// Logic for detecting word completion
         if ( self.word == undefined ){ self.word = msg.word; }
         else if ( msg.word.finnish != self.word.finnish ) {
 
             //console.log('Word change', self.word.finnish, "->", msg.word.finnish);
-            self.onWordComplete(self.word.english.toUpperCase());
+            //self.onWordComplete(self.word.english.toUpperCase());
             self.word = msg.word;
         }
 	

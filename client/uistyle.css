@@ -69,10 +69,12 @@ input:focus {
 }
 
 table, th, td, tr {
-    border: 0px solid green;
+    border-collapse: collapse;
+    border-width: 0px;
+    padding: 0px 0px 0px 0px;
     font-family: "Courier New", Courier, monospace;
-    padding: 0px;
     margin: auto;
+
 }
 td {
  /*   width: 12px;
@@ -110,10 +112,14 @@ td {
 }
 .cell {
     position: relative;
-    width:20px;
-    height:20px;
+    width:19px;
+    height:19px;
 }
 .cell img {
     position: absolute;
     visibility: hidden;
+}
+.wormimage {
+    border: 0px solid green;
+    padding: 0px;
 }
