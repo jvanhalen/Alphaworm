@@ -1,4 +1,3 @@
-
 var proton = new Proton;
 var renderer;
 
@@ -28,7 +27,7 @@ var Worm = function() {
 }
 
 var Food = function() {
-    this.color = "white";
+    this.color = "black";
     this.growth = Math.floor(Math.random()*1+1); 
 }
 
@@ -115,17 +114,18 @@ var Game = function (messagehandler) {
 
     // event handler for food collect
     self.onFoodCollect = function( food ) {
-        console.log("Collected letter", food.letter, "at", food.location);
+        console.log("Collected letter", food.character, "at", food.location);
         var cell = document.getElementById(food.location);
         var rect = cell.getBoundingClientRect();
+
         //console.log(rect.top, rect.right, rect.bottom, rect.left);
 
         
         var effectDiv = document.createElement("div");
-        //effectDiv.appendChild(document.createTextNode(food.letter.toUpperCase()));
-	var img = document.createElement('img');
+        effectDiv.appendChild(document.createTextNode(food.character.toUpperCase()));
+	/*var img = document.createElement('img');
 	effectDiv.appendChild(img);
-	img.src = './media/collectible.png';
+	img.src = './media/collectible.png';*/
         effectDiv.style["position"]= "absolute";
         effectDiv.style["z-index"]= "3";
         effectDiv.style["top"] = rect.top + "px";
@@ -133,7 +133,8 @@ var Game = function (messagehandler) {
         effectDiv.id = 'foodEffect';
         
         document.body.appendChild(effectDiv);
-        
+	// clear character after collect
+	cell.innerHTML = "";        
         
         var tween = new TWEEN.Tween( { s: 1 } )
             .to( { s: 12 }, 1000 )
@@ -509,7 +510,7 @@ var Game = function (messagehandler) {
 	    .onUpdate( function(){
 		console.log('updating.....');
 		for(var id = 0; id < self.gameArea.height*self.gameArea.width; id++){
-		    var tmp = document.getElementById(id);
+		    var tmp = document.getElementById(id+"_worm");
 		    tmp.style["transform"] = "scale("+this.s+")";			
 		    tmp.style["-webkit-transform"] = "scale("+this.s+")";			
 		    tmp.style["-ms-transform"] = "scale("+this.s+")";			
@@ -555,16 +556,23 @@ var Game = function (messagehandler) {
 	    .easing( TWEEN.Easing.Bounce.Out)
 	    .onUpdate( function(){
 		for( var i = 0;i < this.w.length; i++) {
-		    var tmp = document.getElementById(this.w.location[i]);
-		    tmp.style["top"] = this.s*Math.random() + "px";
-		    tmp.style["left"] = this.s*Math.random() + "px";
+		    var tmp = document.getElementById(this.w.location[i]+'_worm');
+		    if ( tmp !== undefined && tmp !== null )
+		    {
+			tmp.style["top"] = this.s*Math.random() + "px";
+			tmp.style["left"] = this.s*Math.random() + "px";
+		    }
 		}
 	    })
 	    .onComplete( function(){
 		for( var i = 0;i < this.w.length; i++) {
-		    var tmp = document.getElementById(this.w.location[i]);
-		    tmp.style["top"] = "0px";
-		    tmp.style["left"] = "0px";
+
+		    var tmp = document.getElementById(this.w.location[i]+'_worm');
+		    if ( tmp !== undefined && tmp !== null)
+		    {
+			tmp.style["top"] = "0px";
+			tmp.style["left"] = "0px";
+		    }
 		}
 	    }).start();
     
@@ -731,7 +739,6 @@ var Game = function (messagehandler) {
 
     self.initGameboard = function() {
         console.log("initGameboard");
-
         document.getElementById('gameboard').innerHTML = "";
         var gameboard = '<p id="score"></p>';
         // Create grid
@@ -741,7 +748,7 @@ var Game = function (messagehandler) {
             for(var j=0; j<self.gameArea.width; j++) {
                 var id = (j+(i*self.gameArea.height));
                 var grid = 
-		    '<td><div class="cell"><img class="wormimage" id="' + id + '" src="./media/worm.png"></div></td>';
+		    '<td><div class="cell"><img class="wormimage" id="' + id + '_worm" src="./media/worm.png"></div><div class="character" id="' + id + '"></div></td>';
                 gameboard += grid;
             }
             gameboard += '</tr>';
@@ -756,10 +763,10 @@ var Game = function (messagehandler) {
         self.updateGameboard();
 	// first time we are very small
         for(var i=0; i<self.gameArea.height*self.gameArea.width; i++) {
-	    document.getElementById(i).style["-webkit-transform"] = "scale(0)";
-	    document.getElementById(i).style["transform"] = "scale(0)";
-	    document.getElementById(i).style["-o-transform"] = "scale(0)";
-	    document.getElementById(i).style["-ms-transform"] = "scale(0)";
+	    document.getElementById(i+'_worm').style["-webkit-transform"] = "scale(0)";
+	    document.getElementById(i+'_worm').style["transform"] = "scale(0)";
+	    document.getElementById(i+'_worm').style["-o-transform"] = "scale(0)";
+	    document.getElementById(i+'_worm').style["-ms-transform"] = "scale(0)";
 	}
     },
 
@@ -768,8 +775,7 @@ var Game = function (messagehandler) {
         for(var i=0; i<self.gameArea.height; i++) {
             for(var j=0; j<self.gameArea.width; j++) {
                 var id = (j+(i*self.gameArea.height));
-
-		document.getElementById(id).style["visibility"] = "hidden";
+		document.getElementById(id+'_worm').style["visibility"] = "hidden";
             }
         }
     },
@@ -809,7 +815,7 @@ var Game = function (messagehandler) {
         for (var id=0; id<msg.worms.length; id++) {
             for (var x=0; x<msg.worms[id].location.length; x++) {
 
-		var cell = document.getElementById(msg.worms[id].location[x]); 
+		var cell = document.getElementById(msg.worms[id].location[x]+'_worm'); 
 		cell.src = './media/worm.png';
 		var clipping = self.getWormTileByPosition(msg.worms[id].location, x);
 
@@ -840,7 +846,7 @@ var Game = function (messagehandler) {
 	    var cell = document.getElementById(msg.food[x].location);
 	    /*cell.src = './media/collectible.png';
             cell.style["clip"] = 'auto';*/
-	    cell.style["visibility"] = "visible"
+	    //cell.style["visibility"] = "visible"
             // Iteration 5 onwards - the alphabets
             cell.innerHTML = msg.food[x].character.toUpperCase();
 	}

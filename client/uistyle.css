@@ -26,15 +26,16 @@
     top: -600px;
     z-index: 2;
 }
-BODY {
-    background-color: black;
-    color: white;
-}
+
 #container {
+    overflow: hidden;
+}
+BODY {
     overflow: hidden;
 }
 html *
 {
+
     font-size: 1em !important;
     color: #000 !important;
     font-family: "Courier New", Courier, monospace;
@@ -116,8 +117,8 @@ table, th, td, tr {
 
 }
 td {
-    width: 19px;
-    height: 19px;
+/*    width: 19px;
+    height: 19px;*/
     position: relative;
 }
 
@@ -156,6 +157,13 @@ td {
 .cell img {
     position: absolute;
     visibility: hidden;
+}
+.character
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
 }
 .wormimage {
     border: 0px solid green;
