@@ -1,8 +1,9 @@
+
 var proton = new Proton;
 var renderer;
 
+var Worm = function() { 
 
-var worm = function() { 
     this.name = "wormee";
     this.color = "blue";
     this.startingLength = 5;
@@ -26,15 +27,15 @@ var worm = function() {
 
 }
 
-var food = function() {
-    this.color = "red";
+var Food = function() {
+    this.color = "white";
     this.growth = Math.floor(Math.random()*1+1); 
 }
 
-var gameArea = function() {
+var GameArea = function() {
 
-    this.height = 40;
-    this.width = 40;
+    this.height = 30;
+    this.width = 30;
 
     this.color = "lightblue";
 }
@@ -682,14 +683,14 @@ var Game = function (messagehandler) {
 
         if (null == msg) {
             console.log("create empty gameboard");
-            self.gameArea = new gameArea();
+            self.gameArea = new GameArea();
         }
         else {
-            self.worm = new worm();
-            self.gameArea = new gameArea();
+            self.worm = new Worm();
+            self.gameArea = new GameArea();
             self.amountOfFood = 8;
             self.foods = [];
-            self.food = new food();
+            self.food = new Food();
         }
 
         self.initGameboard();
@@ -767,6 +768,7 @@ var Game = function (messagehandler) {
         for(var i=0; i<self.gameArea.height; i++) {
             for(var j=0; j<self.gameArea.width; j++) {
                 var id = (j+(i*self.gameArea.height));
+
 		document.getElementById(id).style["visibility"] = "hidden";
             }
         }
@@ -834,11 +836,13 @@ var Game = function (messagehandler) {
         self.foods = JSON.parse(JSON.stringify(msg.food));
         // Render foods
         for (var x=0; x<msg.food.length; x++) {
-            //document.getElementById(msg.food[x].location).bgColor = msg.food[x].color;
+
 	    var cell = document.getElementById(msg.food[x].location);
-	    cell.src = './media/collectible.png';
-            cell.style["clip"] = 'auto';
-	    cell.style["visibility"] = "visible";
+	    /*cell.src = './media/collectible.png';
+            cell.style["clip"] = 'auto';*/
+	    cell.style["visibility"] = "visible"
+            // Iteration 5 onwards - the alphabets
+            cell.innerHTML = msg.food[x].character.toUpperCase();
 	}
 	// Logic for detecting word completion
         if ( self.word == undefined ){ self.word = msg.word; }
@@ -848,8 +852,18 @@ var Game = function (messagehandler) {
             //self.onWordComplete(self.word.english.toUpperCase());
             self.word = msg.word;
         }
-	
-        document.getElementById("score").innerHTML = "";
+	var from = msg.word['from'];
+        var answer = msg.word['answer'];
+
+        document.getElementById("score").innerHTML = "<strong>" + from.toUpperCase() + " = " + answer.toUpperCase() + "</strong><br />";
+
+
+
+
+
+        // Print the word that needs a translation (the translation is there too, don't cheat! :)
+
+
         for (var x=0; x<msg.worms.length; x++) {
             // A little trick to play audio when score is increased
             if (msg.worms[x].name == self.name && self.score < msg.worms[x].score) {
@@ -857,10 +871,10 @@ var Game = function (messagehandler) {
                 audio.volume = self.maxVolume;
                 audio.play();
                 audio.volume = self.preferredVolume;
-                self.score=msg.worms[x].score;
+                self.score = msg.worms[x].score;
             }
             var separator = (x+1 != msg.worms.length) ? "&nbsp;&nbsp|&nbsp;&nbsp;" : "";
-            document.getElementById("score").innerHTML += '<strong><font color="' + msg.worms[x].color + '">' + msg.worms[x].name +'</font></strong>';
+            document.getElementById("score").innerHTML += '<strong><font style="color: ' + msg.worms[x].color + ';">' + msg.worms[x].name +'</font></strong>';
             document.getElementById("score").innerHTML += ":&nbsp;" + msg.worms[x].score + separator;
 
         }
@@ -928,7 +942,7 @@ var Game = function (messagehandler) {
                 break;
         }
 
-        console.log("Game.handleInput", direction);
+        //console.log("Game.handleInput", direction);
         
         if (direction != null) {
             var msg = messages.message.USER_INPUT.new();
